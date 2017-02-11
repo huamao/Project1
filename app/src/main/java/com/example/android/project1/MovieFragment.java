@@ -6,6 +6,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -13,8 +15,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.GridView;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -31,7 +31,7 @@ import java.net.URL;
 
 public class MovieFragment extends Fragment {
 
-    private LoadImageAdapter mMovieAdapter;
+    private ImageAdapter mMovieAdapter;
 
     //private String[] mMovieStrs;
 
@@ -46,23 +46,24 @@ public class MovieFragment extends Fragment {
         setHasOptionsMenu(true);
     }
 
-   private String[] mMovieStrs = {"https://image.tmdb.org/t/p/w185/AgzX7mmCrQcSozvqWGwSpFAsEXj.jpg",
+   /*private String[] mMovieStrs = {"https://image.tmdb.org/t/p/w185/AgzX7mmCrQcSozvqWGwSpFAsEXj.jpg",
             "https://image.tmdb.org/t/p/w185/4W9ejAfUnqbBAD5wmfGxC04wFp8.jpg",
             "https://image.tmdb.org/t/p/w185/tBrssQ4PksKC5sBBWOITyyDgflZ.jpg",
             "https://image.tmdb.org/t/p/w185/aHhGjO3jaxUKiWXiXwJCVt3icjC.jpg",
             "https://image.tmdb.org/t/p/w185/adqL6JyooWGK6xyHkWPjVO4rI7b.jpg",
             "https://image.tmdb.org/t/p/w185/6YRdgYyT6qZHcRhR6qKedY3qS7R.jpg",
             "https://image.tmdb.org/t/p/w185/sog24e3ZoiztJ3QEdynCM0SPsVy.jpg",
-            "https://image.tmdb.org/t/p/w185/9bBogMZ9WfA37BjReVk7FU78eRn.jpg"};
+            "https://image.tmdb.org/t/p/w185/9bBogMZ9WfA37BjReVk7FU78eRn.jpg"};*/
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.movie_fragment_main, container, false);
-        GridView gridView = (GridView) rootView.findViewById(R.id.listview_movie);
-        //mMovieStrs = new String[20];
-        mMovieAdapter = new LoadImageAdapter(getActivity(), mMovieStrs);
-        gridView.setAdapter(mMovieAdapter);
+        RecyclerView recylcer = (RecyclerView)rootView.findViewById (R.id.RecyclerView_movie);
+        StaggeredGridLayoutManager mgr = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+        recylcer.setLayoutManager(mgr);
+        mMovieAdapter = new ImageAdapter(getActivity(), new String[20]);
+        recylcer.setAdapter(mMovieAdapter);
         return rootView;
     }
 
@@ -228,7 +229,7 @@ public class MovieFragment extends Fragment {
         @Override
         protected void onPostExecute(String[] result) {
             if (result != null) {
-                //mMovieAdapter.addMovie(result);
+                mMovieAdapter.add(result);
                 //for (String onceMovieStr : result) {
                 //    mMovieAdapter.add(onceMovieStr);
                 }

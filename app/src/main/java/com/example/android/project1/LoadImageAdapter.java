@@ -17,7 +17,7 @@ public class LoadImageAdapter extends ArrayAdapter {
     private Context context;
     private LayoutInflater inflater;
 
-    public String[] imageUrls;
+    private String[] imageUrls;
 
     public LoadImageAdapter(Context context, String[] imageUrls) {
         super(context, R.layout.list_item_movie, imageUrls);
