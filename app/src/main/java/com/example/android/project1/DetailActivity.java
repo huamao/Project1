@@ -75,7 +75,6 @@ public class DetailActivity extends AppCompatActivity {
                         .with(getActivity())
                         .load(backgroundPicStr)
                         .placeholder(R.mipmap.ic_launcher)
-                        .fit()
                         .into(imageView);
                 ((TextView) rootView.findViewById(R.id.detail_date)).setText(DateStr);
                 ((TextView) rootView.findViewById(R.id.vote_average)).setText(vote_averageStr + "/10");

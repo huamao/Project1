@@ -56,12 +56,11 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
         lp.height = ViewGroup.LayoutParams.MATCH_PARENT;
         holder.imageView.setLayoutParams(lp);
         holder.imageView.setMaxWidth(screenWidth / 2);
-        holder.imageView.setMaxHeight(((screenWidth / 2) * 5));// 这里设置为最大宽度的5倍
+        holder.imageView.setMaxHeight((int)((screenWidth / 2) * 1.4));// 这里设置为最大宽度的1.5倍
         Picasso
                 .with(context)
                 .load(data[position])
                 .placeholder(R.mipmap.ic_launcher)
-                .fit()
                 .into(holder.imageView);
         holder.imageView.setOnClickListener(new View.OnClickListener() {
 
