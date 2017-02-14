@@ -4,11 +4,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+
 import com.squareup.picasso.Picasso;
+
+import static android.widget.ImageView.ScaleType.FIT_START;
 
 /**
  * Created by Administrator on 2017/2/9.
@@ -16,16 +20,20 @@ import com.squareup.picasso.Picasso;
 
 public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> {
 
+    private int screenWidth;
     private String[] data;
-    private  Context context;
-    private  LayoutInflater inflater;
-    private  String[] movieTitleStr;
-    private  String[] backgroundPicStr;
-    private  String[] detailsStr;
+    private Context context;
+    private LayoutInflater inflater;
+    private String[] movieTitleStr;
+    private String[] backgroundPicStr;
+    private String[] detailsStr;
+    private String[] datesStr;
+    private String[] vote_averagesStr;
 
-    public ImageAdapter (Context context, String[] imageUrls) {
+    public ImageAdapter(Context context, String[] imageUrls, int screenWidth) {
         inflater = LayoutInflater.from(context);
         this.context = context;
+        this.screenWidth = screenWidth;
         data = imageUrls;
     }
 
@@ -42,22 +50,30 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
     public void onBindViewHolder(ViewHolder holder, final int position) {
         //View gridView =  inflater.inflate(R.layout.list_item_movie, null);
         //ImageView imageView = (ImageView) gridView.findViewById(R.id.list_item_movie_imageview);
-        //ImageView imageView = ViewHolder;
+        //imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        ViewGroup.LayoutParams lp = holder.imageView.getLayoutParams();
+        lp.width = screenWidth / 2;
+        lp.height = ViewGroup.LayoutParams.MATCH_PARENT;
+        holder.imageView.setLayoutParams(lp);
+        holder.imageView.setMaxWidth(screenWidth / 2);
+        holder.imageView.setMaxHeight(((screenWidth / 2) * 5));// 这里设置为最大宽度的5倍
         Picasso
                 .with(context)
                 .load(data[position])
                 .placeholder(R.mipmap.ic_launcher)
                 .fit()
                 .into(holder.imageView);
-        holder.imageView.setOnClickListener(new View.OnClickListener(){
+        holder.imageView.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
                 Context context = v.getContext();
                 Bundle bundleToDetail = new Bundle();
-                bundleToDetail.putString("backgroundPicStr", backgroundPicStr[position]);
+                bundleToDetail.putString("backgroundPicStr", data[position]);
                 bundleToDetail.putString("jsonData", movieTitleStr[position]);
                 bundleToDetail.putString("detailsStr", detailsStr[position]);
+                bundleToDetail.putString("datesStr", datesStr[position]);
+                bundleToDetail.putString("vote_averagesStr", vote_averagesStr[position]);
                 Intent intent = new Intent(context, DetailActivity.class);
                 intent.putExtras(bundleToDetail);
                 context.startActivity(intent);
@@ -72,11 +88,13 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
     }
 
     //更新数据
-    public void add(String[] strs, String[] movieTitle, String[] backgroundPic, String[] details) {
+    public void add(String[] strs, String[] movieTitle, String[] backgroundPic, String[] details, String[] dates, String[] vote_averages) {
         data = strs;
         movieTitleStr = movieTitle;
         backgroundPicStr = backgroundPic;
         detailsStr = details;
+        datesStr = dates;
+        vote_averagesStr = vote_averages;
         this.notifyDataSetChanged();
     }
 
