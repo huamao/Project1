@@ -34,5 +34,10 @@
                 android:value="com.example.android.project1.MainActivity" />
         </activity>
     </application>
-
+    <supports-screens
+        android:smallScreens="true"
+        android:normalScreens="true"
+        android:largeScreens="true"
+        android:resizeable="true"
+        android:anyDensity="true" />
 </manifest>

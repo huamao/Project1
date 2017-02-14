@@ -6,6 +6,9 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -13,8 +16,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.GridView;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -24,6 +25,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Administrator on 2017/2/4.
@@ -31,11 +34,13 @@ import java.net.URL;
 
 public class MovieFragment extends Fragment {
 
-    private LoadImageAdapter mMovieAdapter;
-
-    //private String[] mMovieStrs;
+    private ImageAdapter mMovieAdapter;
 
     private URL url;
+
+    private int screenWidth;
+
+    private int screenHeight;
 
     public MovieFragment() {
     }
@@ -46,23 +51,21 @@ public class MovieFragment extends Fragment {
         setHasOptionsMenu(true);
     }
 
-   private String[] mMovieStrs = {"https://image.tmdb.org/t/p/w185/AgzX7mmCrQcSozvqWGwSpFAsEXj.jpg",
-            "https://image.tmdb.org/t/p/w185/4W9ejAfUnqbBAD5wmfGxC04wFp8.jpg",
-            "https://image.tmdb.org/t/p/w185/tBrssQ4PksKC5sBBWOITyyDgflZ.jpg",
-            "https://image.tmdb.org/t/p/w185/aHhGjO3jaxUKiWXiXwJCVt3icjC.jpg",
-            "https://image.tmdb.org/t/p/w185/adqL6JyooWGK6xyHkWPjVO4rI7b.jpg",
-            "https://image.tmdb.org/t/p/w185/6YRdgYyT6qZHcRhR6qKedY3qS7R.jpg",
-            "https://image.tmdb.org/t/p/w185/sog24e3ZoiztJ3QEdynCM0SPsVy.jpg",
-            "https://image.tmdb.org/t/p/w185/9bBogMZ9WfA37BjReVk7FU78eRn.jpg"};
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.movie_fragment_main, container, false);
-        GridView gridView = (GridView) rootView.findViewById(R.id.listview_movie);
-        //mMovieStrs = new String[20];
-        mMovieAdapter = new LoadImageAdapter(getActivity(), mMovieStrs);
-        gridView.setAdapter(mMovieAdapter);
+        RecyclerView recylcer = (RecyclerView) rootView.findViewById(R.id.RecyclerView_movie);
+        //获取屏幕高度和宽度
+        DisplayMetrics metric = new DisplayMetrics();
+        getActivity().getWindowManager().getDefaultDisplay().getMetrics(metric);
+        screenWidth = metric.widthPixels;     // 屏幕宽度（像素）
+        screenHeight = metric.heightPixels;   // 屏幕高度（像素）
+
+        StaggeredGridLayoutManager mgr = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+        recylcer.setLayoutManager(mgr);
+        mMovieAdapter = new ImageAdapter(getActivity(), new String[20], screenWidth);
+        recylcer.setAdapter(mMovieAdapter);
         return rootView;
     }
 
@@ -118,50 +121,74 @@ public class MovieFragment extends Fragment {
         updateMovie();
     }
 
-    public class FetchMovieTask extends AsyncTask<URL, Void, String[]> {
+    public class FetchMovieTask extends AsyncTask<URL, Void, List<String[]>> {
 
         private final String LOG_TAG = FetchMovieTask.class.getSimpleName();
 
-        private String[] getMovieDataFromJson(String movieJsonStr)
+        private List<String[]> dataList = new ArrayList<String[]>();
+
+        private List<String[]> getMovieDataFromJson(String movieJsonStr)
                 throws JSONException {
             final int number = 20;
             // These are the names of the JSON objects that need to be extracted.
             final String RESULT = "results";
-            //final String TITLE = "title";
+            final String TITLE = "title";
             final String PICTURE_PATH = "poster_path";
-            //final String DETAILS = "overview";
-            //final String DATE = "release_date";
-            //final String BACKDROP_PATH = "backdrop_path";
-            //final String VOTE_AVERAGE = "vote_average";
+            final String DETAILS = "overview";
+            final String DATE = "release_date";
+            final String BACKDROP_PATH = "backdrop_path";
+            final String VOTE_AVERAGE = "vote_average";
 
             JSONObject forecastJson = new JSONObject(movieJsonStr);
             JSONArray movieArray = forecastJson.getJSONArray(RESULT);
 
             String[] resultStrs = new String[number];
+            String[] titleStrs = new String[number];
+            String[] detailStrs = new String[number];
+            String[] dateStrs = new String[number];
+            String[] backPicStrs = new String[number];
+            String[] vote_averageStrs = new String[number];
             for(int i = 0; i < movieArray.length(); i++) {
                 //电影名字
-                //String title;
+                String title;
                 //电影详情描述文字
-                //String description;
+                String description;
                 //电影图片
                 String poster_path;
                 //发布日期
-                //String release_date;
+                String release_date;
                 //背景图片
-                //String backdrop_path;
-                //投票结果
-                //String vote_average;
+                String backdrop_path;
+                //评分结果
+                String vote_average;
 
                 JSONObject onceMovie = movieArray.getJSONObject(i);
-                String tmp = onceMovie.getString(PICTURE_PATH);
-                poster_path = "https://image.tmdb.org/t/p/w185" + tmp;
+                String tmp_p = onceMovie.getString(PICTURE_PATH);
+                poster_path = "https://image.tmdb.org/t/p/w185" + tmp_p;
                 resultStrs[i] = poster_path;
+                title = onceMovie.getString(TITLE);
+                titleStrs[i] = title;
+                description = onceMovie.getString(DETAILS);
+                detailStrs[i] = description;
+                release_date = onceMovie.getString(DATE);
+                dateStrs[i] = release_date;
+                String tmp_b = onceMovie.getString(BACKDROP_PATH);
+                backdrop_path = "https://image.tmdb.org/t/p/w185" + tmp_b;
+                backPicStrs[i] = backdrop_path;
+                vote_average = onceMovie.getString(VOTE_AVERAGE);
+                vote_averageStrs[i] = vote_average;
             }
-            return resultStrs;
+            dataList.add(resultStrs);
+            dataList.add(titleStrs);
+            dataList.add(detailStrs);
+            dataList.add(dateStrs);
+            dataList.add(backPicStrs);
+            dataList.add(vote_averageStrs);
+            return dataList;
         }
 
         @Override
-        protected String[] doInBackground(URL... params) {
+        protected List<String[]> doInBackground(URL... params) {
             if (params.length == 0) {
                 return null;
             }
@@ -176,13 +203,12 @@ public class MovieFragment extends Fragment {
                 urlConnection = (HttpURLConnection) params[0].openConnection();
                 urlConnection.setRequestMethod("GET");
                 urlConnection.connect();
-
                 // Read the input stream into a String
                 InputStream inputStream = urlConnection.getInputStream();
                 StringBuffer buffer = new StringBuffer();
                 if (inputStream == null) {
                     // Nothing to do.
-                    return  null;
+                    return null;
                 }
                 reader = new BufferedReader(new InputStreamReader(inputStream));
 
@@ -226,11 +252,9 @@ public class MovieFragment extends Fragment {
             return null;
         }
         @Override
-        protected void onPostExecute(String[] result) {
+        protected void onPostExecute(List<String[]> result) {
             if (result != null) {
-                //mMovieAdapter.addMovie(result);
-                //for (String onceMovieStr : result) {
-                //    mMovieAdapter.add(onceMovieStr);
+                mMovieAdapter.add(result.get(0), result.get(1), result.get(4), result.get(2), result.get(3), result.get(5));
                 }
             }
         }
