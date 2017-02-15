@@ -8,7 +8,6 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -38,9 +37,7 @@ public class MovieFragment extends Fragment {
 
     private URL url;
 
-    private int screenWidth;
-
-    private int screenHeight;
+    private String[] titleStr;
 
     public MovieFragment() {
     }
@@ -55,16 +52,10 @@ public class MovieFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.movie_fragment_main, container, false);
-        RecyclerView recylcer = (RecyclerView) rootView.findViewById(R.id.RecyclerView_movie);
-        //获取屏幕高度和宽度
-        DisplayMetrics metric = new DisplayMetrics();
-        getActivity().getWindowManager().getDefaultDisplay().getMetrics(metric);
-        screenWidth = metric.widthPixels;     // 屏幕宽度（像素）
-        screenHeight = metric.heightPixels;   // 屏幕高度（像素）
-
+        RecyclerView recylcer = (RecyclerView)rootView.findViewById (R.id.RecyclerView_movie);
         StaggeredGridLayoutManager mgr = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         recylcer.setLayoutManager(mgr);
-        mMovieAdapter = new ImageAdapter(getActivity(), new String[20], screenWidth);
+        mMovieAdapter = new ImageAdapter(getActivity(), new String[20]);
         recylcer.setAdapter(mMovieAdapter);
         return rootView;
     }
@@ -125,7 +116,7 @@ public class MovieFragment extends Fragment {
 
         private final String LOG_TAG = FetchMovieTask.class.getSimpleName();
 
-        private List<String[]> dataList = new ArrayList<String[]>();
+        private List<String[]> dataList = new ArrayList<String[]> ();
 
         private List<String[]> getMovieDataFromJson(String movieJsonStr)
                 throws JSONException {
@@ -137,7 +128,7 @@ public class MovieFragment extends Fragment {
             final String DETAILS = "overview";
             final String DATE = "release_date";
             final String BACKDROP_PATH = "backdrop_path";
-            final String VOTE_AVERAGE = "vote_average";
+            //final String VOTE_AVERAGE = "vote_average";
 
             JSONObject forecastJson = new JSONObject(movieJsonStr);
             JSONArray movieArray = forecastJson.getJSONArray(RESULT);
@@ -147,7 +138,6 @@ public class MovieFragment extends Fragment {
             String[] detailStrs = new String[number];
             String[] dateStrs = new String[number];
             String[] backPicStrs = new String[number];
-            String[] vote_averageStrs = new String[number];
             for(int i = 0; i < movieArray.length(); i++) {
                 //电影名字
                 String title;
@@ -159,8 +149,8 @@ public class MovieFragment extends Fragment {
                 String release_date;
                 //背景图片
                 String backdrop_path;
-                //评分结果
-                String vote_average;
+                //投票结果
+                //String vote_average;
 
                 JSONObject onceMovie = movieArray.getJSONObject(i);
                 String tmp_p = onceMovie.getString(PICTURE_PATH);
@@ -175,15 +165,12 @@ public class MovieFragment extends Fragment {
                 String tmp_b = onceMovie.getString(BACKDROP_PATH);
                 backdrop_path = "https://image.tmdb.org/t/p/w185" + tmp_b;
                 backPicStrs[i] = backdrop_path;
-                vote_average = onceMovie.getString(VOTE_AVERAGE);
-                vote_averageStrs[i] = vote_average;
             }
             dataList.add(resultStrs);
             dataList.add(titleStrs);
             dataList.add(detailStrs);
             dataList.add(dateStrs);
             dataList.add(backPicStrs);
-            dataList.add(vote_averageStrs);
             return dataList;
         }
 
@@ -203,12 +190,13 @@ public class MovieFragment extends Fragment {
                 urlConnection = (HttpURLConnection) params[0].openConnection();
                 urlConnection.setRequestMethod("GET");
                 urlConnection.connect();
+
                 // Read the input stream into a String
                 InputStream inputStream = urlConnection.getInputStream();
                 StringBuffer buffer = new StringBuffer();
                 if (inputStream == null) {
                     // Nothing to do.
-                    return null;
+                    return  null;
                 }
                 reader = new BufferedReader(new InputStreamReader(inputStream));
 
@@ -254,7 +242,7 @@ public class MovieFragment extends Fragment {
         @Override
         protected void onPostExecute(List<String[]> result) {
             if (result != null) {
-                mMovieAdapter.add(result.get(0), result.get(1), result.get(4), result.get(2), result.get(3), result.get(5));
+                mMovieAdapter.add(result.get(0), result.get(1), result.get(4) ,result.get(2));
                 }
             }
         }
