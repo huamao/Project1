@@ -1,5 +1,6 @@
 package com.example.android.project1;
 
+import android.app.ProgressDialog;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -8,6 +9,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -37,7 +39,11 @@ public class MovieFragment extends Fragment {
 
     private URL url;
 
-    private String[] titleStr;
+    private int screenWidth;
+
+    private int screenHeight;
+
+    private ProgressDialog progressDialog;
 
     public MovieFragment() {
     }
@@ -52,17 +58,24 @@ public class MovieFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.movie_fragment_main, container, false);
-        RecyclerView recylcer = (RecyclerView)rootView.findViewById (R.id.RecyclerView_movie);
+        RecyclerView recylcer = (RecyclerView) rootView.findViewById(R.id.RecyclerView_movie);
+        progressDialog = new ProgressDialog(getActivity());
+        progressDialog.setTitle("电影信息");
+        progressDialog.setMessage("加载中，请稍等...");
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setCancelable(false);
+
+        //获取屏幕高度和宽度
+        DisplayMetrics metric = new DisplayMetrics();
+        getActivity().getWindowManager().getDefaultDisplay().getMetrics(metric);
+        screenWidth = metric.widthPixels;     // 屏幕宽度（像素）
+        screenHeight = metric.heightPixels;   // 屏幕高度（像素）
+
         StaggeredGridLayoutManager mgr = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         recylcer.setLayoutManager(mgr);
-        mMovieAdapter = new ImageAdapter(getActivity(), new String[20]);
+        mMovieAdapter = new ImageAdapter(getActivity(), new String[20], screenWidth);
         recylcer.setAdapter(mMovieAdapter);
         return rootView;
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.moviefragment, menu);
     }
 
     @Override
@@ -75,7 +88,7 @@ public class MovieFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
-    private void updateMovie() {
+    public void updateMovie() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
         String movie_type = prefs.getString(getString(R.string.pref_movie_type_key), getString(R.string.pref_movie_value_popular));
         Uri builtUrl;
@@ -116,7 +129,7 @@ public class MovieFragment extends Fragment {
 
         private final String LOG_TAG = FetchMovieTask.class.getSimpleName();
 
-        private List<String[]> dataList = new ArrayList<String[]> ();
+        private List<String[]> dataList = new ArrayList<String[]>();
 
         private List<String[]> getMovieDataFromJson(String movieJsonStr)
                 throws JSONException {
@@ -128,7 +141,7 @@ public class MovieFragment extends Fragment {
             final String DETAILS = "overview";
             final String DATE = "release_date";
             final String BACKDROP_PATH = "backdrop_path";
-            //final String VOTE_AVERAGE = "vote_average";
+            final String VOTE_AVERAGE = "vote_average";
 
             JSONObject forecastJson = new JSONObject(movieJsonStr);
             JSONArray movieArray = forecastJson.getJSONArray(RESULT);
@@ -138,6 +151,7 @@ public class MovieFragment extends Fragment {
             String[] detailStrs = new String[number];
             String[] dateStrs = new String[number];
             String[] backPicStrs = new String[number];
+            String[] vote_averageStrs = new String[number];
             for(int i = 0; i < movieArray.length(); i++) {
                 //电影名字
                 String title;
@@ -149,8 +163,8 @@ public class MovieFragment extends Fragment {
                 String release_date;
                 //背景图片
                 String backdrop_path;
-                //投票结果
-                //String vote_average;
+                //评分结果
+                String vote_average;
 
                 JSONObject onceMovie = movieArray.getJSONObject(i);
                 String tmp_p = onceMovie.getString(PICTURE_PATH);
@@ -165,13 +179,21 @@ public class MovieFragment extends Fragment {
                 String tmp_b = onceMovie.getString(BACKDROP_PATH);
                 backdrop_path = "https://image.tmdb.org/t/p/w185" + tmp_b;
                 backPicStrs[i] = backdrop_path;
+                vote_average = onceMovie.getString(VOTE_AVERAGE);
+                vote_averageStrs[i] = vote_average;
             }
             dataList.add(resultStrs);
             dataList.add(titleStrs);
             dataList.add(detailStrs);
             dataList.add(dateStrs);
             dataList.add(backPicStrs);
+            dataList.add(vote_averageStrs);
             return dataList;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            progressDialog.show();
         }
 
         @Override
@@ -190,13 +212,12 @@ public class MovieFragment extends Fragment {
                 urlConnection = (HttpURLConnection) params[0].openConnection();
                 urlConnection.setRequestMethod("GET");
                 urlConnection.connect();
-
                 // Read the input stream into a String
                 InputStream inputStream = urlConnection.getInputStream();
                 StringBuffer buffer = new StringBuffer();
                 if (inputStream == null) {
                     // Nothing to do.
-                    return  null;
+                    return null;
                 }
                 reader = new BufferedReader(new InputStreamReader(inputStream));
 
@@ -242,7 +263,8 @@ public class MovieFragment extends Fragment {
         @Override
         protected void onPostExecute(List<String[]> result) {
             if (result != null) {
-                mMovieAdapter.add(result.get(0), result.get(1), result.get(4) ,result.get(2));
+                mMovieAdapter.add(result.get(0), result.get(1), result.get(4), result.get(2), result.get(3), result.get(5));
+                progressDialog.dismiss();
                 }
             }
         }

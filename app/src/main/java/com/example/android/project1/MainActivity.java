@@ -8,23 +8,29 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
+
+    MovieFragment movieFragment = new MovieFragment();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        if (savedInstanceState == null) {
+        if (savedInstanceState == null && isOnline()) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new MovieFragment())
+                    .add(R.id.container, movieFragment)
                     .commit();
+        } else {
+            Toast.makeText(getApplicationContext(), "网络不可用，请检查网络！", Toast.LENGTH_SHORT).show();
         }
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
+        getMenuInflater().inflate(R.menu.moviefragment, menu);
         return true;
     }
 
@@ -34,6 +40,12 @@ public class MainActivity extends AppCompatActivity {
         if(id == R.id.action_settings) {
             startActivity(new Intent(this, SettingsActivity.class));
             return true;
+        }
+        if (id == R.id.action_refresh && isOnline()) {
+            movieFragment.updateMovie();
+            return true;
+        } else {
+            Toast.makeText(getApplicationContext(), "网络不可用，请检查网络！", Toast.LENGTH_SHORT).show();
         }
         return super.onOptionsItemSelected(item);
     }
