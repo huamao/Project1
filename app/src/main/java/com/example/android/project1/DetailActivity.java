@@ -17,6 +17,7 @@ import com.squareup.picasso.Picasso;
 
 import static com.example.android.project1.R.id.container;
 
+
 /**
  * Created by Administrator on 2017/2/4.
  */
@@ -51,11 +52,9 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     public static class DetailFragment extends Fragment {
-        private String mMovieStr;
-        private String backgroundPicStr;
-        private String detailsStr;
-        private String DateStr;
-        private String vote_averageStr;
+
+        MovieParcelable movieParcelable;
+
         public DetailFragment() {
             setHasOptionsMenu(true);
         }
@@ -66,24 +65,20 @@ public class DetailActivity extends AppCompatActivity {
             ImageView imageView = (ImageView) rootView.findViewById(R.id.detail_background);
             Intent intent = getActivity().getIntent();
             if (intent != null) {
-                backgroundPicStr = intent.getStringExtra("backgroundPicStr");
-                mMovieStr = intent.getStringExtra("jsonData");
-                detailsStr = intent.getStringExtra("detailsStr");
-                DateStr = intent.getStringExtra("datesStr");
-                vote_averageStr = intent.getStringExtra("vote_averagesStr");
+                movieParcelable = intent.getParcelableExtra("movie");//获取数据
                 Picasso
                         .with(getActivity())
-                        .load(backgroundPicStr)
+                        .load(movieParcelable.getBackgroundPic())
                         .placeholder(R.mipmap.ic_launcher)
                         .into(imageView);
-                ((TextView) rootView.findViewById(R.id.detail_date)).setText(DateStr);
-                ((TextView) rootView.findViewById(R.id.vote_average)).setText(vote_averageStr + "/10");
-                ((TextView) rootView.findViewById(R.id.title_text)).setText(mMovieStr);
+                ((TextView) rootView.findViewById(R.id.detail_date)).setText(movieParcelable.getDate());
+                ((TextView) rootView.findViewById(R.id.vote_average)).setText(movieParcelable.getVote_average() + "/10");
+                ((TextView) rootView.findViewById(R.id.title_text)).setText(movieParcelable.getTitle());
                 ((TextView) rootView.findViewById(R.id.name_text)).setText("电影详情：");
                 ((TextView) rootView.findViewById(R.id.name_text)).getPaint().setFakeBoldText(true);
                 TextView tv = (TextView) rootView.findViewById(R.id.detail_text);
                 tv.setMovementMethod(ScrollingMovementMethod.getInstance());
-                tv.setText(detailsStr);
+                tv.setText(movieParcelable.getDetail());
             }
             return rootView;
         }

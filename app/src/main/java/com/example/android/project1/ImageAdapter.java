@@ -12,6 +12,7 @@ import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
 
+import static android.os.Build.VERSION_CODES.M;
 import static android.widget.ImageView.ScaleType.FIT_START;
 
 /**
@@ -29,6 +30,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
     private String[] detailsStr;
     private String[] datesStr;
     private String[] vote_averagesStr;
+    private MovieParcelable movieParcelable;
 
     public ImageAdapter(Context context, String[] imageUrls, int screenWidth) {
         inflater = LayoutInflater.from(context);
@@ -65,14 +67,9 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
             @Override
             public void onClick(View v) {
                 Context context = v.getContext();
-                Bundle bundleToDetail = new Bundle();
-                bundleToDetail.putString("backgroundPicStr", data[position]);
-                bundleToDetail.putString("jsonData", movieTitleStr[position]);
-                bundleToDetail.putString("detailsStr", detailsStr[position]);
-                bundleToDetail.putString("datesStr", datesStr[position]);
-                bundleToDetail.putString("vote_averagesStr", vote_averagesStr[position]);
+                movieParcelable = new MovieParcelable(data[position], movieTitleStr[position], detailsStr[position], datesStr[position], vote_averagesStr[position]);
                 Intent intent = new Intent(context, DetailActivity.class);
-                intent.putExtras(bundleToDetail);
+                intent.putExtra("movie", movieParcelable);
                 context.startActivity(intent);
             }
         });

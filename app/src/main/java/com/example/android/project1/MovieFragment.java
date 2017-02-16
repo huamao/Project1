@@ -29,21 +29,17 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import static android.icu.lang.UCharacter.GraphemeClusterBreak.T;
+
 /**
  * Created by Administrator on 2017/2/4.
  */
 
 public class MovieFragment extends Fragment {
-
     private ImageAdapter mMovieAdapter;
-
     private URL url;
 
     private int screenWidth;
-
-    private int screenHeight;
-
-    private ProgressDialog progressDialog;
 
     public MovieFragment() {
     }
@@ -59,17 +55,12 @@ public class MovieFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.movie_fragment_main, container, false);
         RecyclerView recylcer = (RecyclerView) rootView.findViewById(R.id.RecyclerView_movie);
-        progressDialog = new ProgressDialog(getActivity());
-        progressDialog.setTitle("电影信息");
-        progressDialog.setMessage("加载中，请稍等...");
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        progressDialog.setCancelable(false);
 
         //获取屏幕高度和宽度
         DisplayMetrics metric = new DisplayMetrics();
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(metric);
         screenWidth = metric.widthPixels;     // 屏幕宽度（像素）
-        screenHeight = metric.heightPixels;   // 屏幕高度（像素）
+        //screenHeight = metric.heightPixels;   // 屏幕高度（像素）
 
         StaggeredGridLayoutManager mgr = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         recylcer.setLayoutManager(mgr);
@@ -115,7 +106,7 @@ public class MovieFragment extends Fragment {
                 Log.d("Error", "URL格式错误");
             }
         }
-        FetchMovieTask movieTask = new FetchMovieTask();
+        FetchMovieTask movieTask = new FetchMovieTask(getActivity(), new FetchMyMovieTaskCompleteListener());
         movieTask.execute(url);
     }
 
@@ -125,147 +116,13 @@ public class MovieFragment extends Fragment {
         updateMovie();
     }
 
-    public class FetchMovieTask extends AsyncTask<URL, Void, List<String[]>> {
-
-        private final String LOG_TAG = FetchMovieTask.class.getSimpleName();
-
-        private List<String[]> dataList = new ArrayList<String[]>();
-
-        private List<String[]> getMovieDataFromJson(String movieJsonStr)
-                throws JSONException {
-            final int number = 20;
-            // These are the names of the JSON objects that need to be extracted.
-            final String RESULT = "results";
-            final String TITLE = "title";
-            final String PICTURE_PATH = "poster_path";
-            final String DETAILS = "overview";
-            final String DATE = "release_date";
-            final String BACKDROP_PATH = "backdrop_path";
-            final String VOTE_AVERAGE = "vote_average";
-
-            JSONObject forecastJson = new JSONObject(movieJsonStr);
-            JSONArray movieArray = forecastJson.getJSONArray(RESULT);
-
-            String[] resultStrs = new String[number];
-            String[] titleStrs = new String[number];
-            String[] detailStrs = new String[number];
-            String[] dateStrs = new String[number];
-            String[] backPicStrs = new String[number];
-            String[] vote_averageStrs = new String[number];
-            for(int i = 0; i < movieArray.length(); i++) {
-                //电影名字
-                String title;
-                //电影详情描述文字
-                String description;
-                //电影图片
-                String poster_path;
-                //发布日期
-                String release_date;
-                //背景图片
-                String backdrop_path;
-                //评分结果
-                String vote_average;
-
-                JSONObject onceMovie = movieArray.getJSONObject(i);
-                String tmp_p = onceMovie.getString(PICTURE_PATH);
-                poster_path = "https://image.tmdb.org/t/p/w185" + tmp_p;
-                resultStrs[i] = poster_path;
-                title = onceMovie.getString(TITLE);
-                titleStrs[i] = title;
-                description = onceMovie.getString(DETAILS);
-                detailStrs[i] = description;
-                release_date = onceMovie.getString(DATE);
-                dateStrs[i] = release_date;
-                String tmp_b = onceMovie.getString(BACKDROP_PATH);
-                backdrop_path = "https://image.tmdb.org/t/p/w185" + tmp_b;
-                backPicStrs[i] = backdrop_path;
-                vote_average = onceMovie.getString(VOTE_AVERAGE);
-                vote_averageStrs[i] = vote_average;
-            }
-            dataList.add(resultStrs);
-            dataList.add(titleStrs);
-            dataList.add(detailStrs);
-            dataList.add(dateStrs);
-            dataList.add(backPicStrs);
-            dataList.add(vote_averageStrs);
-            return dataList;
-        }
+    public class FetchMyMovieTaskCompleteListener implements AsyncTaskCompleteListener<List<String[]>> {
 
         @Override
-        protected void onPreExecute() {
-            progressDialog.show();
-        }
-
-        @Override
-        protected List<String[]> doInBackground(URL... params) {
-            if (params.length == 0) {
-                return null;
-            }
-            // These two need to be declared outside the try/catch
-            // so that they can be closed in the finally block.
-            HttpURLConnection urlConnection = null;
-            BufferedReader reader = null;
-
-            // Will contain the raw JSON response as a string.
-            String movieJsonStr = null;
-            try {
-                urlConnection = (HttpURLConnection) params[0].openConnection();
-                urlConnection.setRequestMethod("GET");
-                urlConnection.connect();
-                // Read the input stream into a String
-                InputStream inputStream = urlConnection.getInputStream();
-                StringBuffer buffer = new StringBuffer();
-                if (inputStream == null) {
-                    // Nothing to do.
-                    return null;
-                }
-                reader = new BufferedReader(new InputStreamReader(inputStream));
-
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
-                    // But it does make debugging a *lot* easier if you print out the completed
-                    // buffer for debugging.
-                    buffer.append(line + "\n");
-                }
-
-                if (buffer.length() == 0) {
-                    // Stream was empty.  No point in parsing.
-                    return null;
-                }
-                movieJsonStr = buffer.toString();
-                // Log.v(LOG_TAG, "JSON:" + forecastJsonStr);
-            } catch (IOException e) {
-                Log.e(LOG_TAG, "Error ", e);
-                // If the code didn't successfully get the weather data, there's no point in attemping
-                // to parse it.
-                return null;
-            } finally {
-                if (urlConnection != null) {
-                    urlConnection.disconnect();
-                }
-                if (reader != null) {
-                    try {
-                        reader.close();
-                    } catch (final IOException e) {
-                        Log.e(LOG_TAG, "Error closing stream", e);
-                    }
-                }
-            }
-            try {
-                return getMovieDataFromJson(movieJsonStr);
-            } catch (JSONException e) {
-                Log.e(LOG_TAG, e.getMessage(), e);
-                e.printStackTrace();
-            }
-            return null;
-        }
-        @Override
-        protected void onPostExecute(List<String[]> result) {
+        public void onTaskCpmplete(List<String[]> result) {
             if (result != null) {
                 mMovieAdapter.add(result.get(0), result.get(1), result.get(4), result.get(2), result.get(3), result.get(5));
-                progressDialog.dismiss();
-                }
             }
         }
     }
+}
