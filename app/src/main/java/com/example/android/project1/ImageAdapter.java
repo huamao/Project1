@@ -2,18 +2,13 @@ package com.example.android.project1;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
-import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-
 import com.squareup.picasso.Picasso;
-
-import static android.os.Build.VERSION_CODES.M;
-import static android.widget.ImageView.ScaleType.FIT_START;
+import java.util.ArrayList;
 
 /**
  * Created by Administrator on 2017/2/9.
@@ -22,21 +17,15 @@ import static android.widget.ImageView.ScaleType.FIT_START;
 public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> {
 
     private int screenWidth;
-    private String[] data;
     private Context context;
     private LayoutInflater inflater;
-    private String[] movieTitleStr;
-    private String[] backgroundPicStr;
-    private String[] detailsStr;
-    private String[] datesStr;
-    private String[] vote_averagesStr;
+    private ArrayList<MovieParcelable> movieParcelables;
     private MovieParcelable movieParcelable;
 
-    public ImageAdapter(Context context, String[] imageUrls, int screenWidth) {
+    public ImageAdapter(Context context, int screenWidth) {
         inflater = LayoutInflater.from(context);
         this.context = context;
         this.screenWidth = screenWidth;
-        data = imageUrls;
     }
 
     //RecyclerView显示的子View
@@ -57,19 +46,24 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
         holder.imageView.setLayoutParams(lp);
         holder.imageView.setMaxWidth(screenWidth / 2);//这里除以2是因为有2列，所以宽度是屏幕宽度的1/2
         holder.imageView.setMaxHeight((int) ((screenWidth / 2) * 1.4));// 这里设置高度为最大宽度的1.4倍
-        Picasso
-                .with(context)
-                .load(data[position])
-                .placeholder(R.mipmap.ic_launcher)
-                .into(holder.imageView);
+        if(movieParcelables != null) {
+            Picasso
+                    .with(context)
+                    .load(movieParcelables.get(position).getBackgroundPic())
+                    .placeholder(R.mipmap.ic_launcher)
+                    .into(holder.imageView);
+        }
         holder.imageView.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
                 Context context = v.getContext();
-                movieParcelable = new MovieParcelable(data[position], movieTitleStr[position], detailsStr[position], datesStr[position], vote_averagesStr[position]);
+                movieParcelable = new MovieParcelable(movieParcelables.get(position).getBackgroundPic(), movieParcelables.get(position).getTitle(),
+                        movieParcelables.get(position).getDetail(), movieParcelables.get(position).getDate(), movieParcelables.get(position).getVote_average());
                 Intent intent = new Intent(context, DetailActivity.class);
+                intent.putParcelableArrayListExtra("movies", movieParcelables);
                 intent.putExtra("movie", movieParcelable);
+                intent.putExtra("clickMoviePosition", position);
                 context.startActivity(intent);
             }
         });
@@ -78,17 +72,18 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
     //RecyclerView显示数据条数
     @Override
     public int getItemCount() {
-        return data.length;
+        if (movieParcelables == null) {
+            return 4;
+        }
+        return movieParcelables.size();
     }
 
-    //更新数据
-    public void add(String[] strs, String[] movieTitle, String[] backgroundPic, String[] details, String[] dates, String[] vote_averages) {
-        data = strs;
-        movieTitleStr = movieTitle;
-        backgroundPicStr = backgroundPic;
-        detailsStr = details;
-        datesStr = dates;
-        vote_averagesStr = vote_averages;
+    /**
+     * 更新数据
+     * @param movieParcelables
+     */
+    public void add(ArrayList<MovieParcelable> movieParcelables) {
+        this.movieParcelables = movieParcelables;
         this.notifyDataSetChanged();
     }
 

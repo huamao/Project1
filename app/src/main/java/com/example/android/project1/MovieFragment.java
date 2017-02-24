@@ -1,9 +1,7 @@
 package com.example.android.project1;
 
-import android.app.ProgressDialog;
 import android.content.SharedPreferences;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -12,24 +10,12 @@ import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.List;
-
-import static android.icu.lang.UCharacter.GraphemeClusterBreak.T;
 
 /**
  * Created by Administrator on 2017/2/4.
@@ -64,7 +50,7 @@ public class MovieFragment extends Fragment {
 
         StaggeredGridLayoutManager mgr = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         recylcer.setLayoutManager(mgr);
-        mMovieAdapter = new ImageAdapter(getActivity(), new String[20], screenWidth);
+        mMovieAdapter = new ImageAdapter(getActivity(), screenWidth);
         recylcer.setAdapter(mMovieAdapter);
         return rootView;
     }
@@ -116,12 +102,12 @@ public class MovieFragment extends Fragment {
         updateMovie();
     }
 
-    public class FetchMyMovieTaskCompleteListener implements AsyncTaskCompleteListener<List<String[]>> {
+    public class FetchMyMovieTaskCompleteListener implements AsyncTaskCompleteListener<ArrayList<MovieParcelable>> {
 
         @Override
-        public void onTaskCpmplete(List<String[]> result) {
+        public void onTaskCpmplete(ArrayList<MovieParcelable> result) {
             if (result != null) {
-                mMovieAdapter.add(result.get(0), result.get(1), result.get(4), result.get(2), result.get(3), result.get(5));
+                mMovieAdapter.add(result);
             }
         }
     }

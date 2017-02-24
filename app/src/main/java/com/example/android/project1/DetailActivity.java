@@ -3,6 +3,7 @@ package com.example.android.project1;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
@@ -12,11 +13,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import com.squareup.picasso.Picasso;
-
+import java.util.ArrayList;
 import static com.example.android.project1.R.id.container;
-
 
 /**
  * Created by Administrator on 2017/2/4.
@@ -24,10 +23,19 @@ import static com.example.android.project1.R.id.container;
 
 public class DetailActivity extends AppCompatActivity {
 
+    MovieCollectionPagerAdapter movieCollectionPagerAdapter;
+    private ArrayList<MovieParcelable> movieParcelables;
+    private static ViewPager mViewPager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
+        Intent intent = this.getIntent();
+        movieParcelables = intent.getParcelableArrayListExtra("movies");
+        movieCollectionPagerAdapter = new MovieCollectionPagerAdapter(getSupportFragmentManager(), movieParcelables);
+        mViewPager = (ViewPager) findViewById(R.id.pager);
+        mViewPager.setAdapter(movieCollectionPagerAdapter);
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
                     .add(container, new DetailFragment())
@@ -36,7 +44,7 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     @Override
-    public  boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.detail, menu);
         return true;
     }
@@ -48,12 +56,12 @@ public class DetailActivity extends AppCompatActivity {
             startActivity(new Intent(this, SettingsActivity.class));
             return true;
         }
-        return  super.onOptionsItemSelected(item);
+        return super.onOptionsItemSelected(item);
     }
 
     public static class DetailFragment extends Fragment {
 
-        MovieParcelable movieParcelable;
+        private MovieParcelable movieParcelable;
 
         public DetailFragment() {
             setHasOptionsMenu(true);
@@ -63,9 +71,13 @@ public class DetailActivity extends AppCompatActivity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
             ImageView imageView = (ImageView) rootView.findViewById(R.id.detail_background);
+            Bundle args = getArguments();
             Intent intent = getActivity().getIntent();
-            if (intent != null) {
+            if (intent != null && args != null) {
+                movieParcelable = args.getParcelable("Movie");
+            } else {
                 movieParcelable = intent.getParcelableExtra("movie");//获取数据
+            }
                 Picasso
                         .with(getActivity())
                         .load(movieParcelable.getBackgroundPic())
@@ -79,9 +91,9 @@ public class DetailActivity extends AppCompatActivity {
                 TextView tv = (TextView) rootView.findViewById(R.id.detail_text);
                 tv.setMovementMethod(ScrollingMovementMethod.getInstance());
                 tv.setText(movieParcelable.getDetail());
-            }
+
             return rootView;
         }
-        }
     }
+}
 

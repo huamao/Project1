@@ -3,12 +3,11 @@ package com.example.android.project1;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
+import android.os.Parcel;
 import android.util.Log;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,13 +15,12 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Administrator on 2017/2/16.
  */
 
-public class FetchMovieTask extends AsyncTask<Object, Void, List<String[]>> {
+public class FetchMovieTask extends AsyncTask<Object, Void, ArrayList<MovieParcelable>> {
 
     private final String LOG_TAG = FetchMovieTask.class.getSimpleName();
 
@@ -30,39 +28,33 @@ public class FetchMovieTask extends AsyncTask<Object, Void, List<String[]>> {
 
     private Context context;
 
-    private AsyncTaskCompleteListener<List<String[]>> listener;
+    private AsyncTaskCompleteListener<ArrayList<MovieParcelable>> listener;
 
-    public FetchMovieTask(Context context, AsyncTaskCompleteListener<List<String[]>> listener) {
+    public FetchMovieTask(Context context, AsyncTaskCompleteListener<ArrayList<MovieParcelable>> listener) {
         this.context = context;
         this.listener = listener;
     }
 
-    private List<String[]> dataList = new ArrayList<String[]>();
+    private ArrayList<MovieParcelable> dataList = new ArrayList<MovieParcelable>();
 
     //private ImageAdapter imageAdapter;
 
-    private List<String[]> getMovieDataFromJson(String movieJsonStr)
+    private ArrayList<MovieParcelable> getMovieDataFromJson(String movieJsonStr)
             throws JSONException {
-        final int number = 20;
         // These are the names of the JSON objects that need to be extracted.
         final String RESULT = "results";
         final String TITLE = "title";
         final String PICTURE_PATH = "poster_path";
         final String DETAILS = "overview";
         final String DATE = "release_date";
-        final String BACKDROP_PATH = "backdrop_path";
+        //final String BACKDROP_PATH = "backdrop_path";
         final String VOTE_AVERAGE = "vote_average";
 
         JSONObject forecastJson = new JSONObject(movieJsonStr);
         JSONArray movieArray = forecastJson.getJSONArray(RESULT);
 
-        String[] resultStrs = new String[number];
-        String[] titleStrs = new String[number];
-        String[] detailStrs = new String[number];
-        String[] dateStrs = new String[number];
-        String[] backPicStrs = new String[number];
-        String[] vote_averageStrs = new String[number];
         for (int i = 0; i < movieArray.length(); i++) {
+            MovieParcelable movieParcelable = new MovieParcelable(Parcel.obtain());
             //电影名字
             String title;
             //电影详情描述文字
@@ -72,32 +64,28 @@ public class FetchMovieTask extends AsyncTask<Object, Void, List<String[]>> {
             //发布日期
             String release_date;
             //背景图片
-            String backdrop_path;
+            //String backdrop_path;
             //评分结果
             String vote_average;
 
             JSONObject onceMovie = movieArray.getJSONObject(i);
             String tmp_p = onceMovie.getString(PICTURE_PATH);
             poster_path = "https://image.tmdb.org/t/p/w185" + tmp_p;
-            resultStrs[i] = poster_path;
+            movieParcelable.setBackgroundPic(poster_path);
+            //resultStrs[i] = poster_path;
             title = onceMovie.getString(TITLE);
-            titleStrs[i] = title;
+            movieParcelable.setTitle(title);
             description = onceMovie.getString(DETAILS);
-            detailStrs[i] = description;
+            movieParcelable.setDetail(description);
             release_date = onceMovie.getString(DATE);
-            dateStrs[i] = release_date;
-            String tmp_b = onceMovie.getString(BACKDROP_PATH);
-            backdrop_path = "https://image.tmdb.org/t/p/w185" + tmp_b;
-            backPicStrs[i] = backdrop_path;
+            movieParcelable.setDate(release_date);
+            //String tmp_b = onceMovie.getString(BACKDROP_PATH);
+            //backdrop_path = "https://image.tmdb.org/t/p/w185" + tmp_b;
+            //backPicStrs[i] = backdrop_path;
             vote_average = onceMovie.getString(VOTE_AVERAGE);
-            vote_averageStrs[i] = vote_average;
+            movieParcelable.setVote_average(vote_average);
+            dataList.add(movieParcelable);
         }
-        dataList.add(resultStrs);
-        dataList.add(titleStrs);
-        dataList.add(detailStrs);
-        dataList.add(dateStrs);
-        dataList.add(backPicStrs);
-        dataList.add(vote_averageStrs);
         return dataList;
     }
 
@@ -112,7 +100,7 @@ public class FetchMovieTask extends AsyncTask<Object, Void, List<String[]>> {
     }
 
     @Override
-    protected List<String[]> doInBackground(Object... params) {
+    protected ArrayList<MovieParcelable> doInBackground(Object... params) {
         if (params.length == 0) {
             return null;
         }
@@ -178,7 +166,7 @@ public class FetchMovieTask extends AsyncTask<Object, Void, List<String[]>> {
     }
 
     @Override
-    protected void onPostExecute(List<String[]> result) {
+    protected void onPostExecute(ArrayList<MovieParcelable> result) {
         super.onPostExecute(result);
         listener.onTaskCpmplete(result);
         progressDialog.dismiss();
