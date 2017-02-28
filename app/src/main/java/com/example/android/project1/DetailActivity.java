@@ -26,6 +26,7 @@ public class DetailActivity extends AppCompatActivity {
     MovieCollectionPagerAdapter movieCollectionPagerAdapter;
     private ArrayList<MovieParcelable> movieParcelables;
     private static ViewPager mViewPager;
+    private int checkPosition;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,9 +34,11 @@ public class DetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_detail);
         Intent intent = this.getIntent();
         movieParcelables = intent.getParcelableArrayListExtra("movies");
+        checkPosition = intent.getIntExtra("clickMoviePosition", 0);
         movieCollectionPagerAdapter = new MovieCollectionPagerAdapter(getSupportFragmentManager(), movieParcelables);
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setAdapter(movieCollectionPagerAdapter);
+        mViewPager.setCurrentItem(checkPosition);
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
                     .add(container, new DetailFragment())
