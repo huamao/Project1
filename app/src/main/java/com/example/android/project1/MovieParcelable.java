@@ -3,27 +3,30 @@ package com.example.android.project1;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import static com.example.android.project1.R.id.vote_average;
+import static com.example.android.project1.R.menu.detail;
+
 /**
  * Created by Administrator on 2017/2/16.
  */
 
 public class MovieParcelable implements Parcelable {
-    private String backgroundPic;
+    private String themoviedb_backgroundPic;
 
-    private String title;
+    private String themoviedb_title;
 
-    private String detail;
+    private String themoviedb_detail;
 
-    private String date;
+    private String themoviedb_date;
 
-    private String vote_average;
+    private String themoviedb_vote_average;
 
     protected MovieParcelable(Parcel in) {
-        backgroundPic = in.readString();
-        title = in.readString();
-        detail = in.readString();
-        date = in.readString();
-        vote_average = in.readString();
+        themoviedb_backgroundPic = in.readString();
+        themoviedb_title = in.readString();
+        themoviedb_detail = in.readString();
+        themoviedb_date = in.readString();
+        themoviedb_vote_average = in.readString();
     }
 
     public static final Creator<MovieParcelable> CREATOR = new Creator<MovieParcelable>() {
@@ -40,11 +43,11 @@ public class MovieParcelable implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(backgroundPic);
-        dest.writeString(title);
-        dest.writeString(detail);
-        dest.writeString(date);
-        dest.writeString(vote_average);
+        dest.writeString(themoviedb_backgroundPic);
+        dest.writeString(themoviedb_title);
+        dest.writeString(themoviedb_detail);
+        dest.writeString(themoviedb_date);
+        dest.writeString(themoviedb_vote_average);
     }
 
     @Override
@@ -52,62 +55,56 @@ public class MovieParcelable implements Parcelable {
         return 0;
     }
 
-    public String getBackgroundPic() {
-        return backgroundPic;
+    public String getThemoviedb_backgroundPic() {
+        return themoviedb_backgroundPic;
     }
 
-    public void setBackgroundPic(String backgroundPic) {
-        this.backgroundPic = backgroundPic;
+    public void setThemoviedb_backgroundPic(String themoviedb_backgroundPic) {
+        this.themoviedb_backgroundPic = themoviedb_backgroundPic;
     }
 
-    public String getTitle() {
-        return title;
+    public String getThemoviedb_title() {
+        return themoviedb_title;
     }
 
-    public void setTitle(String movieTitle) {
-        this.title = movieTitle;
+    public void setThemoviedb_title(String themoviedb_title) {
+        this.themoviedb_title = themoviedb_title;
     }
 
-    public String getDetail() {
-        return detail;
+    public String getThemoviedb_detail() {
+        return themoviedb_detail;
     }
 
-    public void setDetail(String detail) {
-        this.detail = detail;
+    public void setThemoviedb_detail(String themoviedb_detail) {
+        this.themoviedb_detail = themoviedb_detail;
     }
 
-    public String getDate() {
-        return date;
+    public String getThemoviedb_date() {
+        return themoviedb_date;
     }
 
-    public void setDate(String date) {
-        this.date = date;
+    public void setThemoviedb_date(String themoviedb_date) {
+        this.themoviedb_date = themoviedb_date;
     }
 
-    public String getVote_average() {
-        return vote_average;
+    public String getThemoviedb_vote_average() {
+        return themoviedb_vote_average;
     }
 
-    public void setVote_average(String vote_average) {
-        this.vote_average = vote_average;
+    public void setThemoviedb_vote_average(String themoviedb_vote_average) {
+        this.themoviedb_vote_average = themoviedb_vote_average;
     }
 
-    public MovieParcelable(String backgroundPic, String title, String detail, String date, String vote_average) {
-        this.backgroundPic = backgroundPic;
-        this.title = title;
-        this.detail = detail;
-        this.date = date;
-        this.vote_average = vote_average;
+    public static Creator<MovieParcelable> getCREATOR() {
+        return CREATOR;
     }
 
-    @Override
-    public String toString() {
-        return "Movie{" +
-                "backgroundPic='" + backgroundPic + '\'' +
-                ", title='" + title + '\'' +
-                ", detail='" + detail + '\'' +
-                ", date='" + date + '\'' +
-                ", vote_average='" + vote_average + '\'' +
-                '}';
+    public MovieParcelable(String themoviedb_backgroundPic, String themoviedb_title, String themoviedb_detail, String themoviedb_date, String themoviedb_vote_average) {
+        this.themoviedb_backgroundPic = themoviedb_backgroundPic;
+        this.themoviedb_title = themoviedb_title;
+        this.themoviedb_detail = themoviedb_detail;
+        this.themoviedb_date = themoviedb_date;
+        this.themoviedb_vote_average = themoviedb_vote_average;
     }
+
 }

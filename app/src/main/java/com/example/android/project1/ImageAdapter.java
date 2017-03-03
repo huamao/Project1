@@ -49,7 +49,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
         if(movieParcelables != null) {
             Picasso
                     .with(context)
-                    .load(movieParcelables.get(position).getBackgroundPic())
+                    .load(movieParcelables.get(position).getThemoviedb_backgroundPic())
                     .placeholder(R.mipmap.ic_launcher)
                     .into(holder.imageView);
         }
@@ -58,8 +58,8 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
             @Override
             public void onClick(View v) {
                 Context context = v.getContext();
-                movieParcelable = new MovieParcelable(movieParcelables.get(position).getBackgroundPic(), movieParcelables.get(position).getTitle(),
-                        movieParcelables.get(position).getDetail(), movieParcelables.get(position).getDate(), movieParcelables.get(position).getVote_average());
+                movieParcelable = new MovieParcelable(movieParcelables.get(position).getThemoviedb_backgroundPic(), movieParcelables.get(position).getThemoviedb_title(),
+                        movieParcelables.get(position).getThemoviedb_detail(), movieParcelables.get(position).getThemoviedb_date(), movieParcelables.get(position).getThemoviedb_vote_average());
                 Intent intent = new Intent(context, DetailActivity.class);
                 intent.putParcelableArrayListExtra("movies", movieParcelables);
                 intent.putExtra("movie", movieParcelable);

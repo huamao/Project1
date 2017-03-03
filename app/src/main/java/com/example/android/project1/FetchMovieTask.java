@@ -71,19 +71,19 @@ public class FetchMovieTask extends AsyncTask<Object, Void, ArrayList<MovieParce
             JSONObject onceMovie = movieArray.getJSONObject(i);
             String tmp_p = onceMovie.getString(PICTURE_PATH);
             poster_path = "https://image.tmdb.org/t/p/w185" + tmp_p;
-            movieParcelable.setBackgroundPic(poster_path);
+            movieParcelable.setThemoviedb_backgroundPic(poster_path);
             //resultStrs[i] = poster_path;
             title = onceMovie.getString(TITLE);
-            movieParcelable.setTitle(title);
+            movieParcelable.setThemoviedb_title(title);
             description = onceMovie.getString(DETAILS);
-            movieParcelable.setDetail(description);
+            movieParcelable.setThemoviedb_detail(description);
             release_date = onceMovie.getString(DATE);
-            movieParcelable.setDate(release_date);
+            movieParcelable.setThemoviedb_date(release_date);
             //String tmp_b = onceMovie.getString(BACKDROP_PATH);
             //backdrop_path = "https://image.tmdb.org/t/p/w185" + tmp_b;
             //backPicStrs[i] = backdrop_path;
             vote_average = onceMovie.getString(VOTE_AVERAGE);
-            movieParcelable.setVote_average(vote_average);
+            movieParcelable.setThemoviedb_vote_average(vote_average);
             dataList.add(movieParcelable);
         }
         return dataList;

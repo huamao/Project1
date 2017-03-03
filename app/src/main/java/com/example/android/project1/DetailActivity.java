@@ -83,17 +83,17 @@ public class DetailActivity extends AppCompatActivity {
             }
                 Picasso
                         .with(getActivity())
-                        .load(movieParcelable.getBackgroundPic())
+                        .load(movieParcelable.getThemoviedb_backgroundPic())
                         .placeholder(R.mipmap.ic_launcher)
                         .into(imageView);
-                ((TextView) rootView.findViewById(R.id.detail_date)).setText(movieParcelable.getDate());
-                ((TextView) rootView.findViewById(R.id.vote_average)).setText(movieParcelable.getVote_average() + "/10");
-                ((TextView) rootView.findViewById(R.id.title_text)).setText(movieParcelable.getTitle());
+                ((TextView) rootView.findViewById(R.id.detail_date)).setText(movieParcelable.getThemoviedb_date());
+                ((TextView) rootView.findViewById(R.id.vote_average)).setText(movieParcelable.getThemoviedb_vote_average() + "/10");
+                ((TextView) rootView.findViewById(R.id.title_text)).setText(movieParcelable.getThemoviedb_title());
                 ((TextView) rootView.findViewById(R.id.name_text)).setText("电影详情：");
                 ((TextView) rootView.findViewById(R.id.name_text)).getPaint().setFakeBoldText(true);
                 TextView tv = (TextView) rootView.findViewById(R.id.detail_text);
                 tv.setMovementMethod(ScrollingMovementMethod.getInstance());
-                tv.setText(movieParcelable.getDetail());
+                tv.setText(movieParcelable.getThemoviedb_detail());
 
             return rootView;
         }
