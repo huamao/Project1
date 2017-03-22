@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -15,7 +16,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
-import static com.example.android.project1.R.id.container;
+import static com.example.android.project1.R.id.container_detail;
 
 /**
  * Created by Administrator on 2017/2/4.
@@ -32,6 +33,19 @@ public class DetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
+        //自定义toolbar
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_detail);
+        toolbar.setTitle(R.string.app_detail);
+        setSupportActionBar(toolbar);
+        toolbar.setNavigationIcon(R.drawable.ic_action_back);
+        //设置NavigationIcon导航图标的返回事件
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
+
         Intent intent = this.getIntent();
         movieParcelables = intent.getParcelableArrayListExtra("movies");
         checkPosition = intent.getIntExtra("clickMoviePosition", 0);
@@ -41,7 +55,7 @@ public class DetailActivity extends AppCompatActivity {
         mViewPager.setCurrentItem(checkPosition);
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(container, new DetailFragment())
+                    .add(container_detail, new DetailFragment())
                     .commit();
         }
     }

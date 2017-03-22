@@ -16,7 +16,7 @@
             android:paddingLeft="16dp"
             android:paddingTop="30dp"
             android:textSize="@dimen/movie_name_text_size"
-            android:background="@color/colorBackground"
+            android:background="@drawable/side_nav_bar"
             android:textColor="@color/colorTextColor"
             android:textAllCaps="true"
             android:text="@string/app_network_refresh" />

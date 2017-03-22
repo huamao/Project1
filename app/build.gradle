@@ -35,20 +35,7 @@ dependencies {
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.android.support:design:24.2.1'
 }
-def releaseTime() {
-    return new Date().time.hashCode()
-}
 
-android.applicationVariants.all { variant ->
-    variant.outputs.each { output ->
-        def outputFile = output.outputFile
-        if (outputFile != null && outputFile.name.endsWith('.apk')) {
-            //这里修改apk文件名
-            def fileName = outputFile.name.replace("app", "${android.defaultConfig.applicationId}_${android.defaultConfig.versionName}_${releaseTime()}")
-            output.outputFile = new File(outputFile.parent, fileName)
-        }
-    }
-}
 repositories {
     mavenCentral()
 }

@@ -12,5 +12,6 @@
     <string name="pref_movie_value_top_rated">top_rated</string>
     <string name="app_network_refresh">网络出错啦！请刷新！</string>
     <string name="app_movie_name">电影详情：</string>
+    <string name="app_network_status">网络不可用，请检查网络！</string>
 
 </resources>
