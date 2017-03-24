@@ -27,7 +27,7 @@ public class SettingsActivity extends AppCompatActivity {
             }
         });
         getFragmentManager().beginTransaction()
-                .add(R.id.content_setting, new SettingsFragment())
+                .add(R.id.container_setting, new SettingsFragment())
                 .commit();
     }
 }
