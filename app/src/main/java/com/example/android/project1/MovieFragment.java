@@ -24,7 +24,7 @@ import java.util.ArrayList;
 public class MovieFragment extends Fragment {
     private ImageAdapter mMovieAdapter;
     private URL url;
-
+    MovieFragment movieFragment;
     private int screenWidth;
 
     public MovieFragment() {
@@ -110,5 +110,11 @@ public class MovieFragment extends Fragment {
                 mMovieAdapter.add(result);
             }
         }
+    }
+
+    // 实现数据传递
+    public void getString(Callback callback) {
+        String msg = "themoviedb热门电影";
+        callback.getString(msg);
     }
 }

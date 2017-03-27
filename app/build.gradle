@@ -31,24 +31,15 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     compile 'com.android.support:appcompat-v7:24.2.1'
-    testCompile 'junit:junit:4.12'
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.android.support:design:24.2.1'
-}
-def releaseTime() {
-    return new Date().time.hashCode()
+    compile 'com.android.support:support-v4:24.2.1'
+    compile 'com.android.support.constraint:constraint-layout:1.0.2'
+    testCompile 'junit:junit:4.12'
 }
 
-android.applicationVariants.all { variant ->
-    variant.outputs.each { output ->
-        def outputFile = output.outputFile
-        if (outputFile != null && outputFile.name.endsWith('.apk')) {
-            //这里修改apk文件名
-            def fileName = outputFile.name.replace("app", "${android.defaultConfig.applicationId}_${android.defaultConfig.versionName}_${releaseTime()}")
-            output.outputFile = new File(outputFile.parent, fileName)
-        }
-    }
-}
+
+
 repositories {
     mavenCentral()
 }
