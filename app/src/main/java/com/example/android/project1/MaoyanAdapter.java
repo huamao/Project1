@@ -1,6 +1,7 @@
 package com.example.android.project1;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,7 +37,7 @@ public class MaoyanAdapter extends RecyclerView.Adapter<MaoyanAdapter.ViewHolder
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(ViewHolder holder, final int position) {
         //调整图片宽度，高度
         ViewGroup.LayoutParams lp = holder.imageView.getLayoutParams();
         lp.width = screenWidth / 2;
@@ -51,6 +52,22 @@ public class MaoyanAdapter extends RecyclerView.Adapter<MaoyanAdapter.ViewHolder
                     .placeholder(R.mipmap.ic_launcher)
                     .into(holder.imageView);
         }
+        holder.imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Context context = v.getContext();
+                maoyanParcelable = new MaoyanParcelable(maoyanParcelables.get(position).getMaoyan_id(), maoyanParcelables.get(position).getMaoyan_img(), maoyanParcelables.get(position).getMaoyan_nm(),
+                        maoyanParcelables.get(position).getMaoyan_cat(), maoyanParcelables.get(position).getMaoyan_dra(), maoyanParcelables.get(position).getMaoyan_dir(), maoyanParcelables.get(position).getMaoyan_star(),
+                        maoyanParcelables.get(position).getMaoyan_rt(),
+                        maoyanParcelables.get(position).getMaoyan_sc(), maoyanParcelables.get(position).getMaoyan_wish(),maoyanParcelables.get(position).getMaoyan_vd());
+                Intent intent = new Intent(context, MaoyanDetailActivity.class);
+                intent.putParcelableArrayListExtra("movies", maoyanParcelables);
+                intent.putExtra("movie", maoyanParcelable);
+                intent.putExtra("clickMoviePosition", position);
+                intent.putExtra("name", "猫眼电影详情");
+                context.startActivity(intent);
+            }
+        });
     }
 
     @Override

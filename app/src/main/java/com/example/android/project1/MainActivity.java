@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -14,20 +13,31 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     MovieFragment movieFragment = new MovieFragment();
 
+    MaoyanFragment maoyanFragment = new MaoyanFragment();
+
+    private String FILM_TITLE;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        maoyanFragment.getString(new Callback() {
+            @Override
+            public void getString(String msg) {
+                FILM_TITLE = msg;
+            }
+        });
+
         //自定义toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_main);
-        toolbar.setTitle(R.string.app_name);
+        toolbar.setTitle(FILM_TITLE);
         setSupportActionBar(toolbar);
         toolbar.setNavigationIcon(R.drawable.ic_home_white_24dp);
         //设置NavigationIcon导航图标的返回事件
@@ -45,10 +55,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         if (savedInstanceState == null && isOnline()) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, movieFragment)
+                    .add(R.id.container, maoyanFragment)
                     .commit();
         } else {
-            Toast.makeText(getApplicationContext(), R.string.app_network_status , Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), R.string.app_network_status, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -72,7 +82,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if(id == R.id.action_settings) {
+        if (id == R.id.action_settings) {
             startActivity(new Intent(this, SettingsActivity.class));
             return true;
         }
@@ -98,20 +108,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         if (id == R.id.nav_camera) {
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.container, movieFragment)
+                    .replace(R.id.container, maoyanFragment)
                     .commit();
         } else if (id == R.id.nav_gallery) {
+            if (movieFragment.isVisible()) {
+                DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+                drawer.closeDrawer(GravityCompat.START);
+                return true;
+            }
+            Bundle bundle = new Bundle();
+            bundle.putString("movie_name", "themoviedb电影");
+            movieFragment.setArguments(bundle);
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.container, new MaoyanFragment())
+                    .replace(R.id.container, movieFragment)
                     .commit();
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

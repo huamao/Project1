@@ -14,9 +14,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import com.squareup.picasso.Picasso;
+
 import java.util.ArrayList;
-import static com.example.android.project1.R.id.container_detail;
 
 /**
  * Created by Administrator on 2017/2/4.
@@ -28,14 +29,20 @@ public class DetailActivity extends AppCompatActivity {
     private ArrayList<MovieParcelable> movieParcelables;
     private static ViewPager mViewPager;
     private int checkPosition;
+    private String movie_name;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
+        Intent intent = this.getIntent();
+        movieParcelables = intent.getParcelableArrayListExtra("movies");
+        checkPosition = intent.getIntExtra("clickMoviePosition", 0);
+        movie_name = intent.getStringExtra("name");
+        movieCollectionPagerAdapter = new MovieCollectionPagerAdapter(getSupportFragmentManager(), movieParcelables);
         //自定义toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_detail);
-        toolbar.setTitle(R.string.app_detail);
+        toolbar.setTitle(movie_name);
         setSupportActionBar(toolbar);
         toolbar.setNavigationIcon(R.drawable.ic_action_back);
         //设置NavigationIcon导航图标的返回事件
@@ -45,17 +52,12 @@ public class DetailActivity extends AppCompatActivity {
                 onBackPressed();
             }
         });
-
-        Intent intent = this.getIntent();
-        movieParcelables = intent.getParcelableArrayListExtra("movies");
-        checkPosition = intent.getIntExtra("clickMoviePosition", 0);
-        movieCollectionPagerAdapter = new MovieCollectionPagerAdapter(getSupportFragmentManager(), movieParcelables);
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setAdapter(movieCollectionPagerAdapter);
         mViewPager.setCurrentItem(checkPosition);
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(container_detail, new DetailFragment())
+                    .add(R.id.container_detail, new DetailFragment())
                     .commit();
         }
     }
@@ -95,19 +97,19 @@ public class DetailActivity extends AppCompatActivity {
             } else {
                 movieParcelable = intent.getParcelableExtra("movie");//获取数据
             }
-                Picasso
-                        .with(getActivity())
-                        .load(movieParcelable.getThemoviedb_backgroundPic())
-                        .placeholder(R.mipmap.ic_launcher)
-                        .into(imageView);
-                ((TextView) rootView.findViewById(R.id.detail_date)).setText(movieParcelable.getThemoviedb_date());
-                ((TextView) rootView.findViewById(R.id.vote_average)).setText(movieParcelable.getThemoviedb_vote_average() + "/10");
-                ((TextView) rootView.findViewById(R.id.title_text)).setText(movieParcelable.getThemoviedb_title());
-                ((TextView) rootView.findViewById(R.id.name_text)).setText("电影详情：");
-                ((TextView) rootView.findViewById(R.id.name_text)).getPaint().setFakeBoldText(true);
-                TextView tv = (TextView) rootView.findViewById(R.id.detail_text);
-                tv.setMovementMethod(ScrollingMovementMethod.getInstance());
-                tv.setText(movieParcelable.getThemoviedb_detail());
+            Picasso
+                    .with(getActivity())
+                    .load(movieParcelable.getThemoviedb_backgroundPic())
+                    .placeholder(R.mipmap.ic_launcher)
+                    .into(imageView);
+            ((TextView) rootView.findViewById(R.id.detail_date)).setText(movieParcelable.getThemoviedb_date());
+            ((TextView) rootView.findViewById(R.id.vote_average)).setText(movieParcelable.getThemoviedb_vote_average() + "/10");
+            ((TextView) rootView.findViewById(R.id.title_text)).setText(movieParcelable.getThemoviedb_title());
+            ((TextView) rootView.findViewById(R.id.name_text)).setText("电影详情：");
+            ((TextView) rootView.findViewById(R.id.name_text)).getPaint().setFakeBoldText(true);
+            TextView tv = (TextView) rootView.findViewById(R.id.detail_text);
+            tv.setMovementMethod(ScrollingMovementMethod.getInstance());
+            tv.setText(movieParcelable.getThemoviedb_detail());
 
             return rootView;
         }

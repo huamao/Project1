@@ -64,6 +64,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
                 intent.putParcelableArrayListExtra("movies", movieParcelables);
                 intent.putExtra("movie", movieParcelable);
                 intent.putExtra("clickMoviePosition", position);
+                intent.putExtra("name", "themoviedb热门电影详情");
                 context.startActivity(intent);
             }
         });
