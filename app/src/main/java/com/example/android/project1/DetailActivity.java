@@ -57,7 +57,7 @@ public class DetailActivity extends AppCompatActivity {
         mViewPager.setCurrentItem(checkPosition);
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container_detail, new DetailFragment())
+                    .add(R.id.container_detail, new DetailActivity.DetailFragment())
                     .commit();
         }
     }

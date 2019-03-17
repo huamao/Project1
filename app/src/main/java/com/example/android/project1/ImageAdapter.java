@@ -89,7 +89,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
     }
 
     //自定义的ViewHolder,减少findViewById调用次数
-    class ViewHolder extends RecyclerView.ViewHolder{
+    static class ViewHolder extends RecyclerView.ViewHolder{
         ImageView imageView;
         //TODO  声明view
         public ViewHolder(View convertView) {

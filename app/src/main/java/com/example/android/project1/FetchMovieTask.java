@@ -114,6 +114,8 @@ public class FetchMovieTask extends AsyncTask<Object, Void, ArrayList<MovieParce
         String movieJsonStr = null;
         try {
             urlConnection = (HttpURLConnection) url.openConnection();
+            urlConnection.setConnectTimeout(100000);
+            urlConnection.setReadTimeout(150000);
             urlConnection.setRequestMethod("GET");
             urlConnection.connect();
             // Read the input stream into a String

@@ -1,7 +1,6 @@
 package com.example.android.project1;
 
 import android.content.Intent;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
@@ -10,9 +9,11 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.MediaController;
 import android.widget.TextView;
 import android.widget.VideoView;
 
@@ -92,15 +93,26 @@ public class MaoyanDetailActivity extends AppCompatActivity {
             videoView = (VideoView) rootView.findViewById(R.id.videoView);
             Uri uri = Uri.parse(maoyanParcelable.getMaoyan_vd());
             videoView.setVideoURI(uri);
+            //添加播放控制器
+            MediaController controller = new MediaController(this.getContext());
+            videoView.setMediaController(controller);
+
             videoView.requestFocus();
-            videoView.start();
-            videoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+
+            controller.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    return true;
+                }
+            });
+
+            /*videoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
                     mp.start();
                     mp.setLooping(true);
                 }
-            });
+            });*/
             ((TextView) rootView.findViewById(R.id.dir_text)).setText("导演：");
             ((TextView) rootView.findViewById(R.id.dir_text)).getPaint().setFakeBoldText(true);
             ((TextView) rootView.findViewById(R.id.dir)).setText(maoyanParcelable.getMaoyan_dir());

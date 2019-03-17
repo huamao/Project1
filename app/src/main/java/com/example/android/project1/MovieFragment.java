@@ -111,10 +111,4 @@ public class MovieFragment extends Fragment {
             }
         }
     }
-
-    // 实现数据传递
-    public void getString(Callback callback) {
-        String msg = "themoviedb热门电影";
-        callback.getString(msg);
-    }
 }

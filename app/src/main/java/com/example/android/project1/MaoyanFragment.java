@@ -29,7 +29,6 @@ public class MaoyanFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
     }
 
     @Override
@@ -55,7 +54,7 @@ public class MaoyanFragment extends Fragment {
         Uri builtUrl;
         final String MOVIE_BASE_URL = "http://m.maoyan.com/movie/list.json?type=hot&offset=0";
         final String LIMIT = "limit";
-        builtUrl = Uri.parse(MOVIE_BASE_URL).buildUpon().appendQueryParameter(LIMIT, "20")
+        builtUrl = Uri.parse(MOVIE_BASE_URL).buildUpon().appendQueryParameter(LIMIT, "36")
                 .build();
         try {
             url = new URL(builtUrl.toString());
